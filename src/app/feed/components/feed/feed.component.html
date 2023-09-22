@@ -1,0 +1,8 @@
+<div class="flex flex-col items-center space-y-8 h-full overflow-scroll h-screen p-8" infinite-scroll
+    [infiniteScrollDistance]="2" [infiniteScrollThrottle]="50" (scrolled)="onScroll()" [scrollWindow]="false">
+    <app-new-post (addPost)="addPost($event)"></app-new-post>
+    <ng-container *ngFor="let post of posts$|async">
+        <app-post [post]="post" [active]="(activePostId$|async) === post.id" (addComment)="addComment($event)"
+            (likeUnlike)="likeUnlike($event)"></app-post>
+    </ng-container>
+</div>

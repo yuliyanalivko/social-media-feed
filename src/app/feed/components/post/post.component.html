@@ -1,0 +1,59 @@
+<mat-card class="border-slate-300 w-[40rem]">
+    <mat-card-header>
+        <img mat-card-avatar [src]="post.avatar" />
+        <mat-card-title>{{ post.author }}</mat-card-title>
+        <mat-card-subtitle>{{ post.createdOn | date: 'h:mm a, MMM d, y' }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+        <p>{{ post.content }}</p>
+        <mat-divider></mat-divider>
+    </mat-card-content>
+
+    <mat-card-actions>
+        <button mat-icon-button color="warn" aria-label="like" (click)="likeUnlike.emit(post.id)">
+            <mat-icon>{{ isLikedByUser() ? 'favorite' : 'favorite_outline'}}</mat-icon>
+        </button>
+        <span>{{ post.likes.length }}</span>
+    </mat-card-actions>
+
+    <!-- Comments -->
+    <mat-accordion>
+    <mat-expansion-panel #matExpansionPanel (afterCollapse)="resetCommentsToShowNumber()">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                Comments ({{ post.comments.length }})
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div *ngIf="post.comments.length > 3" class="mb-4 text-center">
+            <button [disabled]="commentsToShowNumber >= post.comments.length" mat-button
+                (click)="increaseCommentsToShowNumber()">
+                Load previous
+            </button>
+        </div>
+
+        <div class="mb-4 space-y-4">
+            <div *ngFor="let comment of post.comments.slice(-commentsToShowNumber)" class="space-y-1">
+                <div class="flex justify-between">
+                    <div class="font-bold">{{ comment.author }}</div>
+                    <div class="text-gray-500 text-xs">{{ comment.createdOn | date: 'h:mm a, MMM d, y' }}</div>
+                </div>
+                <div>{{ comment.content }}</div>
+            </div>
+        </div>
+
+        <form (submit)="addNewComment()">
+            <mat-form-field class="w-full">
+                <mat-label>Add a comment</mat-label>
+                <input matInput [formControl]="commentControl">
+                <button type="submit" mat-icon-button matSuffix aria-label="Submit comment"
+                    [disabled]="!commentControl.value.trim() || commentControl.errors">
+                    <mat-icon>send</mat-icon>
+                </button>
+                <mat-error *ngIf="commentControl.errors">Comment must contain no more than 128 characters</mat-error>
+            </mat-form-field>
+        </form>
+    </mat-expansion-panel>
+</mat-accordion>
+</mat-card>
